@@ -1,10 +1,22 @@
-<nav>
-  <a routerLink="/staff/schedule">schedule</a>
-  <a routerLink="/staff/appt">appointments</a>
-  <a routerLink="/staff/profile">profile</a>
-  <a routerLink="/">public</a>
-</nav>
-
-<router-outlet />
+<mat-toolbar>
+  <button mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
+  <h1>My Salon: Staff</h1>
+</mat-toolbar>
+<mat-sidenav-container>
+  <mat-sidenav opened mode="side" [style.width]="'250px'">
+    <mat-nav-list>
+      <!-- TODO: Add icons to each anchor -->
+      <a mat-list-item routerLink="/staff/schedule"><mat-icon></mat-icon><span matListItemTitle>schedule</span></a>
+      <a mat-list-item routerLink="/staff/appt"><mat-icon></mat-icon><span matListItemTitle>appointments</span></a>
+      <a mat-list-item routerLink="/staff/profile"><mat-icon></mat-icon><span matListItemTitle>profile</span></a>
+      <a mat-list-item routerLink="/"><mat-icon></mat-icon><span matListItemTitle>public</span></a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content class="content">
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>
 
 <footer>footer</footer>

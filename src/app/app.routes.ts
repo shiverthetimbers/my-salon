@@ -10,5 +10,9 @@ export const routes: Routes = [
     path: 'staff',
     loadComponent: () => import('./staff/staff-shell/staff-shell').then(m => m.StaffShell), 
     loadChildren: () => import('./staff/staff.routes').then(m => m.staff_routes)
+  },
+  {
+    path: '**', 
+    loadComponent: () => import('./shared/not-found/not-found').then(m => m.NotFound)
   }
 ];
