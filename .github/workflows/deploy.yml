@@ -1,0 +1,37 @@
+name: Deploy Angular on GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build -- --configuration=production --base-href /my-salon/ --deploy-url /my-salon/
+      - name: Create 404.html
+        run: |
+          APP_DIR=$(ls dist)
+          cp "dist/$APP_DIR/browser/index.html" "dist/$APP_DIR/browser/404.html"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/my-salon/browser
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
