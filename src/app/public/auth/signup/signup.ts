@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FirebaseService } from '../../../core/firebase-service';
+import { FirebaseAuthService } from '../../../core/services/firebase-auth-service';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,7 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class Signup {
   private formBuilder = inject(FormBuilder);
-  private authService = inject(FirebaseService);
+  private authService = inject(FirebaseAuthService);
   private router = inject(Router);
 
   registerForm = this.formBuilder.group({
@@ -48,7 +48,6 @@ export class Signup {
 
   onSubmit(): void {
     const rawForm = this.registerForm.getRawValue();
-    console.log('form submitted', rawForm);
     this.authService.register(rawForm.email!, rawForm.username!, rawForm.password!).subscribe({
       next: () => {
         this.router.navigateByUrl('staff/schedule');

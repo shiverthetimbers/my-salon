@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { FirebaseService } from '../../../core/firebase-service';
+import { FirebaseAuthService } from '../../../core/services/firebase-auth-service';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +24,7 @@ import { FirebaseService } from '../../../core/firebase-service';
 })
 export class Login {
   private formBuilder = inject(FormBuilder);
-  private authService = inject(FirebaseService);
+  private authService = inject(FirebaseAuthService);
   private router = inject(Router);
 
   toggleStatus = true;

@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-staff-schedule',
   imports: [],
   templateUrl: './staff-schedule.html',
-  styleUrl: './staff-schedule.css'
+  styleUrl: './staff-schedule.css',
 })
-export class StaffSchedule {
-
-}
+export class StaffSchedule {}

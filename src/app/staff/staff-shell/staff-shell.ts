@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatListModule } from '@angular/material/list';
-import { FirebaseService } from '../../core/firebase-service';
+import { FirebaseAuthService } from '../../core/services/firebase-auth-service';
 
 @Component({
   selector: 'app-staff-shell',
@@ -24,7 +24,7 @@ import { FirebaseService } from '../../core/firebase-service';
   styleUrl: './staff-shell.css',
 })
 export class StaffShell {
-  auth = inject(FirebaseService);
+  auth = inject(FirebaseAuthService);
   router = inject(Router);
 
   logout(): void {
