@@ -1,0 +1,33 @@
+<mat-card>
+  <mat-card-header>
+    <h2>My Salon Login</h2>
+  </mat-card-header>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <mat-form-field hideRequiredMarker>
+        <mat-label>Email</mat-label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="example@hotmail.com"
+          matInput
+        />
+      </mat-form-field>
+      <mat-form-field hideRequiredMarker>
+        <mat-label>Password</mat-label>
+        <input id="password" [type]="inputType" formControlName="password" matInput />
+        <mat-icon matSuffix (click)="visibilityToggle(toggleStatus)">{{ visibilityIcon }}</mat-icon>
+      </mat-form-field>
+      @if (errorMessage) {
+      <div class="error">{{ errorMessage }}</div>
+      }
+    </mat-card-content>
+    <mat-card-actions>
+      <button type="submit" matButton="elevated" [disabled]="!this.loginForm.valid">Login</button>
+    </mat-card-actions>
+  </form>
+  <mat-card-footer>
+    <p>New employee at My Salon? <a routerLink="../signup">Sign up</a> to create an account.</p>
+  </mat-card-footer>
+</mat-card>

@@ -1,0 +1,32 @@
+<mat-card>
+  <mat-card-header>
+    <h2>Sign Up</h2>
+  </mat-card-header>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input id="email" type="email" formControlName="email" matInput />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input id="username" type="text" formControlName="username" matInput />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input id="password" type="password" formControlName="password" matInput />
+      </mat-form-field>
+      @if (errorMessage) {
+      <div class="error">{{ errorMessage }}</div>
+      }
+    </mat-card-content>
+    <mat-card-actions>
+      <button type="submit" matButton="elevated" [disabled]="!this.registerForm.valid">
+        Sign up
+      </button>
+    </mat-card-actions>
+  </form>
+  <mat-card-footer>
+    <p>Already have a My Salon account? <a routerLink="../login">Login</a> here.</p>
+  </mat-card-footer>
+</mat-card>

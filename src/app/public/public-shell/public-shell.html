@@ -2,16 +2,25 @@
   <button mat-icon-button>
     <mat-icon>menu</mat-icon>
   </button>
-  <h1>My Salon: Customer</h1>
+  <h1>My Salon: Public</h1>
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav opened mode="side" [style.width]="'250px'">
     <mat-nav-list>
       <!-- TODO: Add icons to each anchor -->
       <a mat-list-item routerLink="/"><mat-icon></mat-icon><span matListItemTitle>home</span></a>
-      <a mat-list-item routerLink="/services"><mat-icon></mat-icon><span matListItemTitle>services</span></a>
-      <a mat-list-item routerLink="/book"><mat-icon></mat-icon><span matListItemTitle>book now</span></a>
-      <a mat-list-item routerLink="/staff"><mat-icon></mat-icon><span matListItemTitle>staff</span></a>
+      <a mat-list-item routerLink="/services"
+        ><mat-icon></mat-icon><span matListItemTitle>services</span></a
+      >
+      <a mat-list-item routerLink="/book"
+        ><mat-icon></mat-icon><span matListItemTitle>book now</span></a
+      >
+      <a mat-list-item routerLink="auth/login"
+        ><mat-icon></mat-icon><span matListItemTitle>login</span></a
+      >
+      <a mat-list-item routerLink="/staff"
+        ><mat-icon></mat-icon><span matListItemTitle>staff</span></a
+      >
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content class="content">

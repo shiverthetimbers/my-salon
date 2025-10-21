@@ -8,10 +8,21 @@
   <mat-sidenav opened mode="side" [style.width]="'250px'">
     <mat-nav-list>
       <!-- TODO: Add icons to each anchor -->
-      <a mat-list-item routerLink="/staff/schedule"><mat-icon></mat-icon><span matListItemTitle>schedule</span></a>
-      <a mat-list-item routerLink="/staff/appt"><mat-icon></mat-icon><span matListItemTitle>appointments</span></a>
-      <a mat-list-item routerLink="/staff/profile"><mat-icon></mat-icon><span matListItemTitle>profile</span></a>
-      <a mat-list-item routerLink="/"><mat-icon></mat-icon><span matListItemTitle>public</span></a>
+      <a mat-list-item routerLink="/staff/schedule"
+        ><mat-icon>schedule</mat-icon><span matListItemTitle>schedule</span></a
+      >
+      <a mat-list-item routerLink="/staff/appt"
+        ><mat-icon>event</mat-icon><span matListItemTitle>appointments</span></a
+      >
+      <a mat-list-item routerLink="/staff/profile"
+        ><mat-icon>face</mat-icon><span matListItemTitle>profile</span></a
+      >
+      <a mat-list-item routerLink="/"
+        ><mat-icon>autorenew</mat-icon><span matListItemTitle>public</span></a
+      >
+      <a (click)="logout()" mat-list-item
+        ><mat-icon>logout</mat-icon><span matListItemTitle>logout</span></a
+      >
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content class="content">
