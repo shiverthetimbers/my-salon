@@ -1,12 +1,11 @@
+#loginButton {
+  margin-left: auto;
+}
 
 .content {
   padding: 16px;
 }
 
 mat-sidenav-container {
-  height: calc(100vh - 64px);
-}
-
-mat-sidenav {
-  background-color: #888;
+  height: calc(100vh - 89px);
 }

@@ -27,11 +27,7 @@ export class StaffShell {
   auth = inject(FirebaseAuthService);
   router = inject(Router);
 
-  logout(): void {
-    this.auth.logout().subscribe({
-      next: () => {
-        this.router.navigateByUrl('');
-      },
-    });
+  logout() {
+    this.auth.logout();
   }
 }

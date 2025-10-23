@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth-guard';
+import { staffGuard } from './core/guards/staff-guard';
 
 export const routes: Routes = [
   {
@@ -11,7 +11,7 @@ export const routes: Routes = [
     path: 'staff',
     loadComponent: () => import('./staff/staff-shell/staff-shell').then((m) => m.StaffShell),
     loadChildren: () => import('./staff/staff.routes').then((m) => m.staff_routes),
-    canActivate: [authGuard],
+    canActivateChild: [staffGuard],
   },
   {
     path: '**',

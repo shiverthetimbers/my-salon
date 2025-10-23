@@ -3,25 +3,24 @@
     <mat-icon>menu</mat-icon>
   </button>
   <h1>My Salon: Staff</h1>
+  @if (auth.isLoggedIn()) {
+  <button id="logoutButton" (click)="logout()" mat-raised-button>Logout</button>
+  }
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav opened mode="side" [style.width]="'250px'">
     <mat-nav-list>
-      <!-- TODO: Add icons to each anchor -->
-      <a mat-list-item routerLink="/staff/schedule"
-        ><mat-icon>schedule</mat-icon><span matListItemTitle>schedule</span></a
-      >
+      <a mat-list-item routerLink="/staff/schedule">
+        <mat-icon matListItemIcon>schedule</mat-icon><span matListItemTitle>schedule</span>
+      </a>
       <a mat-list-item routerLink="/staff/appt"
-        ><mat-icon>event</mat-icon><span matListItemTitle>appointments</span></a
+        ><mat-icon matListItemIcon>event</mat-icon><span matListItemTitle>appointments</span></a
       >
       <a mat-list-item routerLink="/staff/profile"
-        ><mat-icon>face</mat-icon><span matListItemTitle>profile</span></a
+        ><mat-icon matListItemIcon>face</mat-icon><span matListItemTitle>profile</span></a
       >
       <a mat-list-item routerLink="/"
-        ><mat-icon>autorenew</mat-icon><span matListItemTitle>public</span></a
-      >
-      <a (click)="logout()" mat-list-item
-        ><mat-icon>logout</mat-icon><span matListItemTitle>logout</span></a
+        ><mat-icon matListItemIcon>autorenew</mat-icon><span matListItemTitle>public</span></a
       >
     </mat-nav-list>
   </mat-sidenav>

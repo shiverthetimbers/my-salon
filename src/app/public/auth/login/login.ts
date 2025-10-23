@@ -24,7 +24,7 @@ import { FirebaseAuthService } from '../../../core/services/firebase-auth-servic
 })
 export class Login {
   private formBuilder = inject(FormBuilder);
-  private authService = inject(FirebaseAuthService);
+  private auth = inject(FirebaseAuthService);
   private router = inject(Router);
 
   toggleStatus = true;
@@ -48,15 +48,15 @@ export class Login {
     }
   }
 
-  onSubmit(): void {
-    const rawForm = this.loginForm.getRawValue();
-    this.authService.login(rawForm.email!, rawForm.password!).subscribe({
-      next: () => {
-        this.router.navigateByUrl('staff/schedule');
-      },
-      error: (err) => {
-        this.errorMessage = err.code;
-      },
-    });
-  }
+  // onSubmit(): void {
+  //   const rawForm = this.loginForm.getRawValue();
+  //   this.auth.login(rawForm.email!, rawForm.password!).subscribe({
+  //     next: () => {
+  //       this.router.navigateByUrl('staff/schedule');
+  //     },
+  //     error: (err) => {
+  //       this.errorMessage = err.code;
+  //     },
+  //   });
+  // }
 }
