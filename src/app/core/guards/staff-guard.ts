@@ -10,6 +10,7 @@ export const staffGuard: CanActivateChildFn = (childRoute, state) => {
     return true;
   } else {
     router.navigateByUrl('auth/login');
+    alert('You need to be logged in for that.');
     return false;
   }
 };

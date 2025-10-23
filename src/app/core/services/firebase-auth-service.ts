@@ -83,5 +83,6 @@ export class FirebaseAuthService {
   logout() {
     this.isLoggedIn.set(false);
     this.router.navigateByUrl('');
+    alert('You have been successfully logged out.');
   }
 }
