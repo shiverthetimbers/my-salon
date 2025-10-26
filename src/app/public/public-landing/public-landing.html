@@ -1,19 +1,128 @@
 <header>
-  <section class="header-img">
-    <img ngSrc="img/landing-hero.avif" alt="salon storefront" fill />
-  </section>
   <section class="header-text">
-    <h1>Welcome to My Salon</h1>
-    <h2>Best Styles in Town</h2>
-    <p>
+    <div>
+      <h1>Welcome to My Salon</h1>
+      <h2>Best Styles in Town</h2>
+    </div>
+    <button routerLink="book" mat-raised-button>Book Now</button>
+    <!-- <p>
       1782 Main Street
       <br />
       12345 Somewhere, NY
       <br />
       <a href="tel:+15659594876"> 565-959-4876 </a>
-    </p>
+    </p> -->
   </section>
-  <section class="header-btn">
-    <button routerLink="book" mat-raised-button>Book Now</button>
+  <section class="header-img">
+    <img ngSrc="img/landing-hero.avif" alt="salon storefront" fill />
   </section>
 </header>
+<main>
+  <div class="intro">
+    <div class="intro-item">
+      <h3>Expert Stylists</h3>
+      <p>
+        Our experienced barbers and stylists take time to understand your look and lifestyle,
+        delivering sharp, confident results tailored to you.
+      </p>
+    </div>
+    <div class="intro-item">
+      <h3>Experience</h3>
+      <p>
+        Relaxing jazz, comfy chairs, and a complimentary drink while you wait. Everything here is
+        designed for you to unwind.
+      </p>
+    </div>
+    <div class="intro-item">
+      <h3>Easy Booking</h3>
+      <p>
+        Book your next visit in seconds. We keep your schedule—and your style—simple. Walk-ins are
+        welcome too!
+      </p>
+    </div>
+  </div>
+  <mat-divider />
+  <div class="stylists">
+    <div>
+      <figure>
+        <img ngSrc="img/stylist1.jpg" alt="first stylist photo" height="480" width="320" />
+        <figcaption>
+          Photo by
+          <a
+            href="https://unsplash.com/@salaheregouane?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            >Salah Regouane</a
+          >
+          on
+          <a
+            href="https://unsplash.com/photos/a-man-getting-his-hair-cut-by-a-barber-8HkPnJhC5Ic?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            >Unsplash</a
+          >
+        </figcaption>
+      </figure>
+      <div class="stylist-bio">
+        <h3>Eli</h3>
+        <p>
+          With over a decade behind the chair, Eli is known for precision fades, sharp beard work,
+          and clean modern cuts. His clients appreciate his attention to detail and relaxed, no-rush
+          attitude. Whether you're after a classic taper or a bold new look, Eli makes sure every
+          cut leaves you feeling confident and fresh.
+        </p>
+        <button mat-raised-button routerLink="book">Book with me</button>
+      </div>
+    </div>
+    <div>
+      <div class="stylist-bio">
+        <h3>Jordan</h3>
+        <p>
+          Jordan has been in the industry for 8 years, with a focus on women's cuts, color, and
+          texture styling. From rich balayage tones to vibrant fashion shades, Jordan loves bringing
+          out each client's personality through color. Her chair is known for friendly conversation,
+          honest advice, and looks that last between visits.
+        </p>
+        <button mat-raised-button routerLink="book">Book with me</button>
+      </div>
+      <figure>
+        <img ngSrc="img/stylist2.jpg" alt="second stylist photo" height="479" width="320" />
+        <figcaption>
+          Photo by
+          <a
+            href="https://unsplash.com/@awcreativeut?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            >Adam Winger</a
+          >
+          on
+          <a
+            href="https://unsplash.com/photos/woman-in-gray-sweater-holding-white-clothes-hanger-WDmvpGs2060?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            >Unsplash</a
+          >
+        </figcaption>
+      </figure>
+    </div>
+    <div>
+      <figure>
+        <img ngSrc="img/stylist3.avif" alt="third stylist photo" height="480" width="320" />
+        <figcaption>
+          Photo by
+          <a
+            href="https://unsplash.com/@demoya?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            >Michael DeMoya</a
+          >
+          on
+          <a
+            href="https://unsplash.com/photos/man-in-white-dress-shirt-cutting-hair-of-man-in-white-dress-shirt-MUdB4YzDeKA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            >Unsplash</a
+          >
+        </figcaption>
+      </figure>
+      <div class="stylist-bio">
+        <h3>Marcus</h3>
+        <p>
+          Marcus blends traditional barbering with contemporary style. With 6 years of experience,
+          he specializes in fades, undercuts, and men's longer styles that keep a natural,
+          effortless finish. He's passionate about helping every client find a cut that fits their
+          lifestyle—sharp, simple, and easy to maintain.
+        </p>
+        <button mat-raised-button routerLink="book">Book with me</button>
+      </div>
+    </div>
+  </div>
+</main>

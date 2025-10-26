@@ -1,11 +1,16 @@
-#loginButton {
-  margin-left: auto;
+mat-toolbar {
+  background-color: var(--mat-sys-primary-container);
 }
 
-.content {
-  padding: 16px;
+nav {
+  display: flex;
+  width: 100%;
 }
 
-mat-sidenav-container {
-  height: calc(100vh - 89px);
+nav > a {
+  color: var(--mat-sys-primary);
+}
+
+.flex-spacer {
+  flex-grow: 1;
 }

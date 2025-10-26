@@ -1,31 +1,11 @@
 <mat-toolbar>
-  <button mat-icon-button>
-    <mat-icon>menu</mat-icon>
-  </button>
-  <h1>My Salon: Public</h1>
-  <button id="loginButton" mat-raised-button (click)="login()">Login</button>
+  <nav>
+    <a matButton routerLink="/"><span>Home</span></a>
+    <a matButton routerLink="/services"><span>Services</span></a>
+    <a matButton routerLink="/book"><span>Booking</span></a>
+    <div class="flex-spacer"></div>
+    <a matButton (click)="login()"><span>Login</span></a>
+  </nav>
 </mat-toolbar>
-<mat-sidenav-container>
-  <mat-sidenav opened mode="side" [style.width]="'250px'">
-    <mat-nav-list>
-      <a mat-list-item routerLink="/"
-        ><mat-icon matListItemIcon>home</mat-icon><span matListItemTitle>home</span></a
-      >
-      <a mat-list-item routerLink="/services"
-        ><mat-icon matListItemIcon>content_cut</mat-icon><span matListItemTitle>services</span></a
-      >
-      <a mat-list-item routerLink="/book"
-        ><mat-icon matListItemIcon>calendar_month</mat-icon
-        ><span matListItemTitle>book now</span></a
-      >
-      <a mat-list-item routerLink="/staff"
-        ><mat-icon matListItemIcon>badge</mat-icon><span matListItemTitle>staff</span></a
-      >
-    </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content class="content">
-    <router-outlet />
-  </mat-sidenav-content>
-</mat-sidenav-container>
-
+<router-outlet />
 <footer>footer</footer>
