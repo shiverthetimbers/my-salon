@@ -50,6 +50,7 @@ main {
 
 .intro {
   display: flex;
+  flex-direction: column;
   margin: 50px 0;
 }
 
@@ -60,22 +61,38 @@ main {
 
 mat-divider {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1024px;
 }
 
 .stylists {
-  margin-top: 50px;
-  max-width: 1000px;
+  max-width: 1024px;
 }
 
 .stylists > div {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  margin-bottom: 48px;
+}
+
+@media (min-width: 768px) {
+  .intro {flex-direction: row;}
+  .stylists > div { flex-direction: row;}
+  .stylists > div:nth-of-type(even) {flex-direction: row-reverse;}
+  .stylist-bio {padding: 24px;}
+}
+
+figure {
+  margin: 24px 0;
+}
+
+figure:nth-of-type(1) {
+  margin-top: 48px;
 }
 
 figcaption {
-  font-size: .7rem;
-  line-height: .6125;
+  font-size: .6rem;
+  line-height: .5;
   color: var(--mat-sys-on-surface-variant);
 }
 

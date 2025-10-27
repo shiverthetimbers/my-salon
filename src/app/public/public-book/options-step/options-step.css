@@ -1,0 +1,9 @@
+.options-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.btn-div {
+  margin: 48px auto;
+}
