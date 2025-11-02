@@ -8,21 +8,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { MatStepperModule } from '@angular/material/stepper';
 
-interface Service {
-  id: string;
-  name: string;
-  price: string;
-}
-
-interface ServiceGroup {
-  name: string;
-  services: Service[];
-}
-
-interface Stylist {
-  id: string;
-  name: string;
-}
+import { ServiceGroup } from '@core/models/booking/service-group';
+import { Stylist } from '@core/models/booking/stylist';
 
 @Component({
   selector: 'app-options-step',

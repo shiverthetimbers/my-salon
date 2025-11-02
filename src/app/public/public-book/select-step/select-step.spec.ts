@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DateStep } from './date-step';
+import { SelectStep } from './select-step';
 
-describe('DateStep', () => {
-  let component: DateStep;
-  let fixture: ComponentFixture<DateStep>;
+describe('SelectStep', () => {
+  let component: SelectStep;
+  let fixture: ComponentFixture<SelectStep>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DateStep]
+      imports: [SelectStep]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DateStep);
+    fixture = TestBed.createComponent(SelectStep);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
