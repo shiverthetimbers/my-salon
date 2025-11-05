@@ -1,5 +1,9 @@
 <main>
-  <mat-stepper [orientation]="stepperOrientation()">
+  <mat-stepper
+    [linear]="true"
+    [orientation]="stepperOrientation()"
+    (selectionChange)="onStepChange($event)"
+  >
     <mat-step [stepControl]="firstFormGroup" label="Choose a service">
       <app-options-step />
     </mat-step>

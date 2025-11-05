@@ -3,20 +3,16 @@
     <mat-form-field>
       <mat-label>Choose a service</mat-label>
       <mat-select formControlName="service" required>
-        @for (group of serviceGroups; track group) {
-        <mat-optgroup [label]="group.name">
-          @for (service of group.services; track service.id) {
-          <mat-option [value]="service.id">{{ service.name }} {{ service.price }}</mat-option>
-          }
-        </mat-optgroup>
+        @for (svc of (services$ | async) ?? []; track svc.id) {
+        <mat-option [value]="svc.id">{{ svc.name }} ${{ svc.price }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Choose a stylist</mat-label>
       <mat-select formControlName="stylist" value="123" required>
-        @for (stylist of stylists; track stylist.id) {
-        <mat-option [value]="stylist.id">{{ stylist.name }}</mat-option>
+        @for (sty of (stylists$ | async); track sty.id) {
+        <mat-option [value]="sty.id">{{ sty.name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>

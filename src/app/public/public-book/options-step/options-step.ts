@@ -7,9 +7,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { MatStepperModule } from '@angular/material/stepper';
-
-import { ServiceGroup } from '@core/models/booking/service-group';
-import { Stylist } from '@core/models/booking/stylist';
+import { Observable } from 'rxjs';
+import { Service, Stylist } from '@core/models/book-types';
+import { AsyncPipe } from '@angular/common';
+// import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-options-step',
@@ -22,39 +23,19 @@ import { Stylist } from '@core/models/booking/stylist';
     MatDatepickerModule,
     MatButtonModule,
     MatStepperModule,
+    AsyncPipe,
+    // A11yModule,
   ],
   templateUrl: './options-step.html',
   styleUrl: './options-step.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OptionsStep {
-  readonly bookParent = inject(PublicBook);
-  readonly stylists: Stylist[] = [
-    { id: '123', name: 'First-available' },
-    { id: 'abc', name: 'Eli' },
-    { id: 'def', name: 'Jordan' },
-    { id: 'ghi', name: 'Marcus' },
-  ];
-  readonly serviceGroups: ServiceGroup[] = [
-    {
-      name: '-- Haircuts --',
-      services: [
-        { id: 'abc', name: 'Short Cut', price: '$22' },
-        { id: 'def', name: 'Long Cut', price: '$32' },
-        { id: 'ghi', name: 'Kids Cut - 12 & under', price: '$12' },
-        { id: 'jkl', name: 'Buzz Cut', price: '$15' },
-        { id: 'mno', name: 'Head Shave', price: '$25' },
-        { id: 'pqr', name: 'Wash, and Dry', price: '$15' },
-      ],
-    },
-    {
-      name: '-- Facial Hair --',
-      services: [
-        { id: 'mno', name: 'Beard Trim', price: '$15' },
-        { id: 'pqr', name: 'Straight Edge Shave', price: '$20' },
-      ],
-    },
-  ];
+  bookParent = inject(PublicBook);
+
+  readonly stylists$: Observable<Stylist[]> = this.bookParent.stylists$;
+  readonly services$: Observable<Service[]> = this.bookParent.services$;
+
   private readonly _futureDate = new Date();
   private readonly _currentDay = this._futureDate.getDate();
 

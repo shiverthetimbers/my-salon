@@ -25,11 +25,6 @@ mat-card-content > h3 {
   font-weight: 500;
 }
 
-.time-groups {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 .available-slot {
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);

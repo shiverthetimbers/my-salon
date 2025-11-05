@@ -1,29 +1,24 @@
 <form [formGroup]="bookParent.secondFormGroup">
-  @for (stylist of stylists; track stylist.id) {
   <mat-card>
     <mat-card-header>
-      <mat-card-title> {{ stylist.name }}</mat-card-title>
+      <mat-card-title>Available Times</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      @for (group of timeGroups; track group.name) {
-      <h3>{{ group.name }}</h3>
       <div class="time-groups" role="radiogroup">
-        @for (time of group.times; track time.slot) {
-        <input
-          type="button"
-          role="radio"
-          class="available-slot"
-          [value]="time.slot"
-          (click)="bookParent.secondFormGroup.controls.time.setValue(time.slot)"
-          [class.selected]="bookParent.secondFormGroup.controls.time.value === time.slot"
-        />
+        @for (time of (slots$ | async) ?? []; track $index) {
+        <button matButton (click)="selectSlot(time)">
+          {{ time.start | date : 'shortTime' }}
+        </button>
+        } @empty {
+        <p>Loading available times...</p>
         }
       </div>
-      }
     </mat-card-content>
   </mat-card>
-  }
 </form>
+@if (bookParent.secondFormGroup.get('time')?.value; as picked) {
+<p>Selected time: {{ picked.start | date : 'shortTime' }}</p>
+}
 <div class="btn-div">
   <button mat-raised-button matStepperPrevious>Back</button>
   <button [disabled]="!bookParent.secondFormGroup.valid" mat-raised-button matStepperNext>
