@@ -15,6 +15,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { SelectStep } from './select-step/select-step';
 import { Slot } from '@core/models/book-types';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { ConfirmStep } from './confirm-step/confirm-step';
 
 @Component({
   selector: 'app-public-book',
@@ -28,6 +29,7 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
     MatFormFieldModule,
     OptionsStep,
     SelectStep,
+    ConfirmStep,
   ],
   templateUrl: './public-book.html',
   styleUrl: './public-book.css',

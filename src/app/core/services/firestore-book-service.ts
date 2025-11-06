@@ -1,7 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Service, Slot, Stylist, TIME_GRID_MINUTES, TimeRange } from '@core/models/book-types';
+import {
+  CreateAppointmentResult,
+  Service,
+  Slot,
+  Stylist,
+  TIME_GRID_MINUTES,
+  TimeRange,
+} from '@core/models/book-types';
 
 import {
+  addDoc,
   collection,
   doc,
   Firestore,
@@ -12,7 +20,7 @@ import {
   Timestamp,
   where,
 } from 'firebase/firestore';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -155,6 +163,92 @@ export class FirestoreBookService {
               if (!overlaps) slots.push({ start, stylistId });
             }
             return slots;
+          })
+        );
+      })
+    );
+  }
+
+  createAppointment$(input: {
+    serviceId: string;
+    stylistId: string;
+    start: Date; // local Date you picked in Step 2
+    clientId?: string;
+    contact?: { name: string; email?: string; phone?: string };
+  }): Observable<CreateAppointmentResult> {
+    // 1) Read the service to get durationMins (avoid trusting client)
+    const svcRef = doc(this.db, 'services', input.serviceId);
+
+    return from(getDoc(svcRef)).pipe(
+      switchMap((svcSnap) => {
+        if (!svcSnap.exists()) {
+          return throwError(() => new Error('Service not found'));
+        }
+        const { durationMins } = svcSnap.data() as { durationMins: number };
+        if (typeof durationMins !== 'number' || durationMins <= 0) {
+          return throwError(() => new Error('Invalid service duration'));
+        }
+
+        // 2) Compute end time (local)
+        const end = new Date(input.start.getTime() + durationMins * 60_000);
+
+        // Day bounds (local) for the query
+        const dayStart = new Date(
+          input.start.getFullYear(),
+          input.start.getMonth(),
+          input.start.getDate(),
+          0,
+          0,
+          0,
+          0
+        );
+        const dayEnd = new Date(
+          input.start.getFullYear(),
+          input.start.getMonth(),
+          input.start.getDate(),
+          23,
+          59,
+          59,
+          999
+        );
+
+        // 3) Re-check conflicts just before write
+        const apptsRef = collection(this.db, 'appointments');
+        const qAppts = query(
+          apptsRef,
+          where('stylistId', '==', input.stylistId),
+          where('status', '==', 'confirmed'),
+          where('startTime', '>=', Timestamp.fromDate(dayStart)),
+          where('startTime', '<', Timestamp.fromDate(dayEnd))
+        );
+
+        return from(getDocs(qAppts)).pipe(
+          switchMap((snap) => {
+            const overlaps = snap.docs.some((d) => {
+              const a = d.data() as { startTime: Timestamp; endTime: Timestamp };
+              const aStart = a.startTime.toDate();
+              const aEnd = a.endTime.toDate();
+              return input.start < aEnd && end > aStart;
+            });
+            if (overlaps) {
+              return throwError(
+                () => new Error('That time was just taken. Please pick another slot.')
+              );
+            }
+
+            // 4) Write the appointment
+            return from(
+              addDoc(apptsRef, {
+                serviceId: input.serviceId,
+                stylistId: input.stylistId,
+                status: 'confirmed',
+                startTime: Timestamp.fromDate(input.start),
+                endTime: Timestamp.fromDate(end),
+                createdAt: Timestamp.now(),
+                ...(input.clientId ? { clientId: input.clientId } : {}),
+                ...(input.contact ? { guest: input.contact } : {}),
+              })
+            ).pipe(map((ref) => ({ appointmentId: ref.id })));
           })
         );
       })

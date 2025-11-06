@@ -10,12 +10,8 @@
     <mat-step [stepControl]="secondFormGroup" label="Choose a time">
       <app-select-step />
     </mat-step>
-    <mat-step>
-      <ng-template matStepLabel>Done</ng-template>
-      <p>You are now done.</p>
-      <div>
-        <button matButton matStepperPrevious>Back</button>
-      </div>
+    <mat-step label="Confirm your slot">
+      <app-confirm-step />
     </mat-step>
   </mat-stepper>
 </main>
