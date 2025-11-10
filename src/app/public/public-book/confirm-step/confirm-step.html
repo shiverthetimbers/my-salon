@@ -10,24 +10,38 @@
     } @if (timeSlotSig(); as ts) {
     <p><strong>Date:</strong> {{ ts.start | date : 'fullDate' }}</p>
     <p><strong>Time:</strong> {{ ts.start | date : 'shortTime' }}</p>
-    } @if (status() === 'error') {
+    } @if (contactInfoSig(); as c) {
+    <p><strong>Name:</strong> {{ c.firstName }} {{ c.lastName }}</p>
+    @if (c.email) {
+    <p><strong>Email:</strong> {{ c.email }}</p>
+    } @if (c.phone) {
+    <p><strong>Phone:</strong> {{ c.phone }}</p>
+    } } @if (status() === 'error') {
     <p class="text-warn">Booking failed: {{ errorMsg() }}</p>
     } @if (status() === 'success') {
     <p class="text-success">Booked! Confirmation ID: {{ confirmationId() }}</p>
     }
   </mat-card-content>
-  <mat-card-actions>
-    <button
-      mat-raised-button
-      (click)="confirm()"
-      [disabled]="!canConfirm() || status() === 'loading' || status() === 'success'"
-    >
-      Confirm
-    </button>
-    @if (status() === 'loading') {
-    <mat-spinner diameter="24"></mat-spinner>
-    } @if (status() === 'success') {
-    <button mat-stroked-button routerLink="/">Home</button>
-    }
-  </mat-card-actions>
 </mat-card>
+<div class="btn-div">
+  @if (status() !== 'success') {
+  <button
+    mat-raised-button
+    matStepperPrevious
+    [disabled]="status() === 'loading' || status() === 'success'"
+  >
+    Back
+  </button>
+  <button
+    mat-raised-button
+    (click)="confirm()"
+    [disabled]="!canConfirm() || status() === 'loading' || status() === 'success'"
+  >
+    Confirm
+  </button>
+  } @if (status() === 'loading') {
+  <mat-spinner diameter="24"></mat-spinner>
+  } @if (status() === 'success') {
+  <button matButton="filled" routerLink="/">Home</button>
+  }
+</div>

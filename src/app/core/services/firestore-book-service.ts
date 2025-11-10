@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  ContactInfo,
   CreateAppointmentResult,
   Service,
   Slot,
@@ -16,11 +17,13 @@ import {
   getDoc,
   getDocs,
   getFirestore,
+  limit,
   query,
+  serverTimestamp,
   Timestamp,
   where,
 } from 'firebase/firestore';
-import { from, map, Observable, switchMap, throwError } from 'rxjs';
+import { from, map, Observable, of, switchMap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -33,9 +36,16 @@ export class FirestoreBookService {
   }
   private buildStartsFromAvailability(
     dateLocal: Date,
-    windows: TimeRange[],
+    windows: TimeRange[] | undefined,
     durationMins: number
   ): Date[] {
+    if (!windows?.length) return [];
+
+    // safety guards to prevent infinite loops
+    const GRID =
+      typeof TIME_GRID_MINUTES === 'number' && TIME_GRID_MINUTES > 0 ? TIME_GRID_MINUTES : 15; // fallback to 15 if misconfigured
+    if (!Number.isFinite(durationMins) || durationMins <= 0) return [];
+
     const results: Date[] = [];
 
     for (const w of windows) {
@@ -47,7 +57,7 @@ export class FirestoreBookService {
       const latestStartMin = windowEndMin - durationMins;
       if (latestStartMin < windowStartMin) continue;
 
-      for (let m = windowStartMin; m <= latestStartMin; m += TIME_GRID_MINUTES) {
+      for (let m = windowStartMin; m <= latestStartMin; m += GRID) {
         const start = new Date(
           dateLocal.getFullYear(),
           dateLocal.getMonth(),
@@ -169,12 +179,130 @@ export class FirestoreBookService {
     );
   }
 
+  getAvailabilityForAny$(
+    serviceId: string,
+    dateLocal: Date
+  ): Observable<Array<{ stylistId: string; slots: Slot[] }>> {
+    const dayStart = new Date(
+      dateLocal.getFullYear(),
+      dateLocal.getMonth(),
+      dateLocal.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+    const dayEnd = new Date(
+      dateLocal.getFullYear(),
+      dateLocal.getMonth(),
+      dateLocal.getDate(),
+      23,
+      59,
+      59,
+      999
+    );
+
+    const svcRef = doc(this.db, 'services', serviceId);
+    const stylistsRef = collection(this.db, 'stylists');
+
+    return from(getDoc(svcRef)).pipe(
+      switchMap((svcSnap) => {
+        if (!svcSnap.exists()) throw new Error('Service not found');
+        const svc = { id: svcSnap.id, ...(svcSnap.data() as Omit<Service, 'id'>) };
+        const duration = svc.durationMins;
+
+        // 1) read up to 10 active stylists
+        const qStylists = query(stylistsRef, where('active', '==', true), limit(10));
+        return from(getDocs(qStylists)).pipe(
+          switchMap((stySnap) => {
+            const stylists: Array<Stylist & { id: string }> = stySnap.docs.map((d) => ({
+              id: d.id,
+              ...(d.data() as any),
+            }));
+            if (stylists.length === 0) return of([]);
+
+            // 2) build candidate starts per stylist
+            const dayKey = String(this.weekdayOf(dateLocal));
+            const perStylistCandidates = new Map<string, Date[]>();
+
+            for (const sty of stylists) {
+              const raw = (sty as any).weeklyAvailability?.[dayKey] as unknown;
+              const windows = Array.isArray(raw)
+                ? (raw.filter(
+                    (w: any) => w && typeof w.start === 'string' && typeof w.end === 'string'
+                  ) as TimeRange[])
+                : undefined;
+              const starts = this.buildStartsFromAvailability(dateLocal, windows, duration);
+              perStylistCandidates.set(sty.id, starts);
+            }
+
+            // If no one has windows that day, short-circuit
+            const totalCandidates = Array.from(perStylistCandidates.values()).reduce(
+              (a, b) => a + b.length,
+              0
+            );
+            if (totalCandidates === 0) {
+              return of(stylists.map((s) => ({ stylistId: s.id, slots: [] as Slot[] })));
+            }
+
+            // 3) read that day's appointments for these stylists (IN supports up to 10)
+            const apptsRef = collection(this.db, 'appointments');
+            const stylistIds = stylists.map((s) => s.id);
+
+            const qAppts = query(
+              apptsRef,
+              where('stylistId', 'in', stylistIds),
+              where('status', '==', 'confirmed'),
+              where('startTime', '>=', Timestamp.fromDate(dayStart)),
+              where('startTime', '<', Timestamp.fromDate(dayEnd))
+            );
+
+            return from(getDocs(qAppts)).pipe(
+              map((apptSnap) => {
+                // Group conflicts per stylist
+                const conflictsByStylist = new Map<string, Array<{ start: Date; end: Date }>>();
+                for (const d of apptSnap.docs) {
+                  const a = d.data() as {
+                    stylistId: string;
+                    startTime: Timestamp;
+                    endTime: Timestamp;
+                  };
+                  const arr = conflictsByStylist.get(a.stylistId) ?? [];
+                  arr.push({ start: a.startTime.toDate(), end: a.endTime.toDate() });
+                  conflictsByStylist.set(a.stylistId, arr);
+                }
+
+                // 4) subtract overlaps per stylist
+                const out: Array<{ stylistId: string; slots: Slot[] }> = [];
+                for (const sty of stylists) {
+                  const candidates = perStylistCandidates.get(sty.id) ?? [];
+                  const conflicts = conflictsByStylist.get(sty.id) ?? [];
+                  const slots: Slot[] = [];
+
+                  for (const start of candidates) {
+                    const end = new Date(start.getTime() + duration * 60_000);
+                    const overlaps = conflicts.some((c) => start < c.end && end > c.start);
+                    if (!overlaps) slots.push({ start, stylistId: sty.id });
+                  }
+
+                  out.push({ stylistId: sty.id, slots });
+                }
+
+                return out;
+              })
+            );
+          })
+        );
+      })
+    );
+  }
+
   createAppointment$(input: {
     serviceId: string;
     stylistId: string;
-    start: Date; // local Date you picked in Step 2
+    start: Date;
     clientId?: string;
-    contact?: { name: string; email?: string; phone?: string };
+    contact?: ContactInfo;
   }): Observable<CreateAppointmentResult> {
     // 1) Read the service to get durationMins (avoid trusting client)
     const svcRef = doc(this.db, 'services', input.serviceId);
@@ -244,9 +372,22 @@ export class FirestoreBookService {
                 status: 'confirmed',
                 startTime: Timestamp.fromDate(input.start),
                 endTime: Timestamp.fromDate(end),
-                createdAt: Timestamp.now(),
+                createdAt: serverTimestamp(),
                 ...(input.clientId ? { clientId: input.clientId } : {}),
-                ...(input.contact ? { guest: input.contact } : {}),
+                ...(input.contact
+                  ? {
+                      guest: {
+                        firstName: (input.contact.firstName ?? '').trim(),
+                        lastName: (input.contact.lastName ?? '').trim(),
+                        ...(input.contact.email
+                          ? { email: (input.contact.email ?? '').trim() }
+                          : {}),
+                        ...(input.contact.phone
+                          ? { phone: (input.contact.phone ?? '').trim() }
+                          : {}),
+                      },
+                    }
+                  : {}),
               })
             ).pipe(map((ref) => ({ appointmentId: ref.id })));
           })

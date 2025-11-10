@@ -1,4 +1,25 @@
 <form [formGroup]="bookParent.secondFormGroup">
+  @if (groups$) { @let groups = (groups$ | async); @let names = (nameLookup$ | async); @if (groups)
+  { @for (group of groups; track group.stylistId) {
+  <mat-card class="mb-3">
+    <mat-card-header>
+      <mat-card-title>{{ names?.[group.stylistId] ?? group.stylistId }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="time-groups" role="radiogroup">
+        @for (slot of group.slots; track $index) {
+        <button matButton class="mr-2 mb-2" (click)="selectSlot(slot)">
+          {{ slot.start | date : 'shortTime' }}
+        </button>
+        } @empty {
+        <p>No times available for this stylist.</p>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+  } @empty {
+  <p>No stylists available for that day.</p>
+  } } } @if (!groups$ && slots$) {
   <mat-card>
     <mat-card-header>
       <mat-card-title>Available Times</mat-card-title>
@@ -15,6 +36,7 @@
       </div>
     </mat-card-content>
   </mat-card>
+  }
 </form>
 @if (bookParent.secondFormGroup.get('time')?.value; as picked) {
 <p>Selected time: {{ picked.start | date : 'shortTime' }}</p>

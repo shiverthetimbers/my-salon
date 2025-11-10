@@ -7,8 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatCardModule } from '@angular/material/card';
 import { FirestoreBookService } from '@core/services/firestore-book-service';
-import { Observable, of } from 'rxjs';
-import { Slot } from '@core/models/book-types';
+import { catchError, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
+import { Slot, Stylist } from '@core/models/book-types';
 import { AsyncPipe, DatePipe } from '@angular/common';
 
 @Component({
@@ -31,12 +31,29 @@ export class SelectStep {
   bookParent = inject(PublicBook);
   private readonly data = inject(FirestoreBookService);
 
-  slots$: Observable<Slot[]> | null = null;
   message = '';
+  slots$: Observable<Slot[]> | null = null;
+  groups$: Observable<Array<{ stylistId: string; slots: Slot[] }>> | null = null;
+  nameLookup$ = this.bookParent.stylists$.pipe(
+    map((list) => Object.fromEntries(list.map((s) => [s.id, s.name]))),
+    shareReplay(1)
+  );
+
+  private stylistNameMap$ = this.bookParent.stylists$.pipe(
+    map((list: Stylist[]) => new Map<string, string>(list.map((s) => [s.id, s.name])))
+  );
+
+  stylistNameFor(id: string): Observable<string> {
+    return this.stylistNameMap$.pipe(map((m) => m.get(id) ?? id));
+  }
 
   load(): void {
+    // clear selected time if step 1 is changed
+    this.bookParent.secondFormGroup.controls.time.setValue(null);
+
     this.message = '';
     this.slots$ = null;
+    this.groups$ = null;
 
     const serviceId = this.bookParent.firstFormGroup.get('service')?.value as string | null;
     const stylistChoice = this.bookParent.firstFormGroup.get('stylist')?.value as string | null;
@@ -48,8 +65,16 @@ export class SelectStep {
     }
 
     if (stylistChoice === 'any') {
-      this.message = '"any" mode preview comming soon.';
-      this.slots$ = of([]);
+      this.message = 'Loading...';
+      this.groups$ = this.data.getAvailabilityForAny$(serviceId, date).pipe(
+        tap((groups) => console.log('any(): groups returned =', groups.length)),
+        catchError((err) => {
+          console.error('any() error:', err);
+          this.message = err?.message ?? 'Failed to load availability.';
+          return of([]); // render "no stylists available" instead of hanging
+        }),
+        finalize(() => (this.message = ''))
+      );
       return;
     }
 
@@ -57,18 +82,10 @@ export class SelectStep {
   }
 
   selectSlot(slot: Slot): void {
-    this.bookParent.secondFormGroup.get('time')?.setValue(slot);
+    this.bookParent.secondFormGroup.controls.time.setValue(slot);
   }
 
   get hasPickedTime(): boolean {
-    return !!this.bookParent.secondFormGroup.get('time')?.value;
-  }
-
-  get slots(): Observable<Slot[]> | null {
-    return this.slots$;
-  }
-
-  onClick() {
-    console.log(this.bookParent.secondFormGroup.value);
+    return !!this.bookParent.secondFormGroup.controls.time.value;
   }
 }

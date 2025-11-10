@@ -8,14 +8,15 @@ import {
 } from '@angular/core';
 import { PublicBook } from '../public-book';
 import { FirestoreBookService } from '@core/services/firestore-book-service';
-import { Service, Slot, Stylist } from '@core/models/book-types';
+import { ContactInfo, Service, Slot, Stylist } from '@core/models/book-types';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { distinctUntilChanged, Subscription } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @Component({
   selector: 'app-confirm-step',
@@ -26,6 +27,7 @@ import { Router, RouterLink } from '@angular/router';
     MatButtonModule,
     RouterLink,
     MatSnackBarModule,
+    MatStepperModule,
   ],
   templateUrl: './confirm-step.html',
   styleUrl: './confirm-step.css',
@@ -36,7 +38,6 @@ export class ConfirmStep implements OnDestroy {
   private readonly data = inject(FirestoreBookService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly snack = inject(MatSnackBar);
-  private readonly router = inject(Router);
   private subs = new Subscription();
 
   private latestServices: Service[] = [];
@@ -45,6 +46,7 @@ export class ConfirmStep implements OnDestroy {
   serviceNameSig = signal<string | null>(null);
   stylistNameSig = signal<string | null>(null);
   timeSlotSig = signal<Slot | null>(null);
+  contactInfoSig = signal<ContactInfo | null>(null);
 
   ngOnInit() {
     this.subs.add(
@@ -88,6 +90,18 @@ export class ConfirmStep implements OnDestroy {
         this.changeDetector.markForCheck();
       })
     );
+
+    const contactForm = this.bookParent.thirdFormGroup;
+    this.contactInfoSig.set(contactForm.getRawValue() as ContactInfo);
+
+    this.subs.add(
+      contactForm.valueChanges
+        .pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)))
+        .subscribe((v) => {
+          this.contactInfoSig.set(v as ContactInfo);
+          this.changeDetector.markForCheck();
+        })
+    );
   }
 
   status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -96,14 +110,22 @@ export class ConfirmStep implements OnDestroy {
 
   canConfirm(): boolean {
     const hasService = !!this.bookParent.firstFormGroup.get('service')?.value;
-    return hasService && !!this.timeSlotSig();
+    const hasTime = !!this.timeSlotSig();
+    const contactOk = this.bookParent.thirdFormGroup.valid;
+    return hasService && hasTime && contactOk;
   }
 
   confirm(): void {
     const svcId = this.bookParent.firstFormGroup.get('service')?.value as string | null;
     const slot = this.timeSlotSig();
+    const contact = this.contactInfoSig();
 
     if (!svcId || !slot) return;
+
+    if (this.bookParent.thirdFormGroup.invalid) {
+      this.bookParent.thirdFormGroup.markAllAsTouched();
+      return;
+    }
 
     this.status.set('loading');
     this.errorMsg.set('');
@@ -114,12 +136,20 @@ export class ConfirmStep implements OnDestroy {
         serviceId: svcId,
         stylistId: slot.stylistId,
         start: slot.start,
+        contact: contact
+          ? {
+              firstName: (contact.firstName ?? '').trim(),
+              lastName: (contact.lastName ?? '').trim(),
+              email: (contact.email ?? '').trim() || undefined,
+              phone: (contact.phone ?? '').trim() || undefined,
+            }
+          : undefined,
       })
       .subscribe({
         next: (response) => {
           this.status.set('success');
           this.confirmationId.set(response.appointmentId);
-          this.snack.open('Appointment booked!', 'Ok', { duration: 3000 });
+          this.snack.open('Appointment booked!', 'Ok', { duration: 5000 });
         },
         error: (err) => {
           this.status.set('error');

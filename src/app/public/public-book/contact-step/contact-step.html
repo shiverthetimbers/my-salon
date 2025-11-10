@@ -1,0 +1,59 @@
+<form [formGroup]="bookParent.thirdFormGroup" class="contact-form" novalidate>
+  <div class="row">
+    <mat-form-field>
+      <mat-label>First name</mat-label>
+      <input matInput formControlName="firstName" autocomplete="given-name" />
+      @if (firstName?.touched && firstName?.hasError('required')) {
+      <mat-error>First name is required.</mat-error>
+      } @if (firstName?.touched && firstName?.hasError('maxlength')) {
+      <mat-error>Max 50 characters.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Last name</mat-label>
+      <input matInput formControlName="lastName" autocomplete="family-name" />
+      @if (lastName?.touched && lastName?.hasError('required')) {
+      <mat-error>Last name is required.</mat-error>
+      } @if (lastName?.touched && lastName?.hasError('maxlength')) {
+      <mat-error>Max 50 characters.</mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div class="row">
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" autocomplete="email" />
+      @if (email?.touched && email?.hasError('email')) {
+      <mat-error>Enter a valid email.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Phone</mat-label>
+      <input
+        matInput
+        formControlName="phone"
+        type="tel"
+        autocomplete="tel"
+        (blur)="validatePhoneIfPresent()"
+      />
+      @if (phone?.touched && phone?.hasError('phoneInvalid')) {
+      <mat-error>Enter a valid US phone.</mat-error>
+      }
+    </mat-form-field>
+  </div>
+  @if (bookParent.thirdFormGroup.touched && bookParent.thirdFormGroup.hasError('contactRequired')) {
+  <p class="hint-warn">Provide an email or a phone number.</p>
+  }
+  <div class="btn-div">
+    <button mat-raised-button matStepperPrevious>Back</button>
+    <button
+      type="button"
+      mat-raised-button
+      matStepperNext
+      (click)="validatePhoneIfPresent(); markAllTouched()"
+      [disabled]="!bookParent.thirdFormGroup.valid"
+    >
+      Next
+    </button>
+  </div>
+</form>

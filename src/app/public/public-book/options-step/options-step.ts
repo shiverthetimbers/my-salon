@@ -10,7 +10,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { Observable } from 'rxjs';
 import { Service, Stylist } from '@core/models/book-types';
 import { AsyncPipe } from '@angular/common';
-// import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-options-step',
@@ -24,7 +23,6 @@ import { AsyncPipe } from '@angular/common';
     MatButtonModule,
     MatStepperModule,
     AsyncPipe,
-    // A11yModule,
   ],
   templateUrl: './options-step.html',
   styleUrl: './options-step.css',
